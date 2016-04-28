@@ -4,18 +4,31 @@ public class Movie {
 	public static final int NEW_RELEASE = 1;
 	private String title;
 	private int priceCode;
+	private Price price;
 
-	public Movie(String newtitle, int newpriceCode) {
-		title = newtitle;
-		priceCode = newpriceCode;
+	public Movie(String title, int priceCode) {
+		this.title = title;
+		setPriceCode(priceCode);;
 	}
 
 	public int getPriceCode() {
-		return priceCode;
+		return price.getPriceCode();
 	}
 
 	public void setPriceCode(int arg) {
-		priceCode = arg;
+		switch(arg){
+		case REGULAR:
+			price = new RegularPrice();
+			break;
+		case CHILDRENS:
+			price = new ChildrenPrice();
+			break;
+		case NEW_RELEASE:
+			price = new NewReleasePrice();
+			break;
+		default:
+			throw new IllegalArgumentException("Incorrect Price Code");
+		}
 	}
 
 	public String getTitle() {
@@ -23,33 +36,10 @@ public class Movie {
 	}
 
 	double getCharge(int daysRented) {
-		double thisAmount = 0;
-		switch (getPriceCode()) {
-		case Movie.REGULAR:
-			thisAmount += 2;
-			if (daysRented > 2)
-				thisAmount += (daysRented - 2) * 1.5;
-			break;
-		case Movie.NEW_RELEASE:
-			thisAmount += daysRented * 3;
-			break;
-		case Movie.CHILDRENS:
-			thisAmount += 1.5;
-			if (daysRented > 3)
-				thisAmount += (daysRented - 3) * 1.5;
-			break;
-		}
-		return thisAmount;
+		return price.getCharge(daysRented);
 	}
 
-	int getFrequentRenterPoints(Rental rental) {
-		int frequentRenterPoints = 0;
-		// add frequent renter points
-		frequentRenterPoints++;
-		// add bonus for a two day new release rental
-		if ((rental.getMovie().getPriceCode() == Movie.NEW_RELEASE) && rental.getDaysRented() > 1){
-			frequentRenterPoints++;
-		}
-		return frequentRenterPoints;
+	int getFrequentRenterPoints(int daysRented) {
+		return price.getFrequentRenterPoints(daysRented);
 	};
 }
